@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import config from './config'; // Adjust the import path as necessary
 import './SignUp.css'; // Import the CSS file
+import config from './config';
 
 const SignUp = () => {
     const [email, setEmail] = useState('');
@@ -27,9 +27,9 @@ const SignUp = () => {
         };
 
         try {
-            const response = await axios.post(`${config.apiBaseUrl}/signup`, userData);
+            const response = await axios.post(`${config.apiBaseUrl}/dev/auth/signup`, userData);
 
-            if (response.data.success) {
+            if (response.data.responseCode === '200') {
                 setSuccess('Registration successful!');
                 setEmail('');
                 setPassword('');
@@ -38,6 +38,7 @@ const SignUp = () => {
                 setError('Registration failed. Please try again.');
             }
         } catch (error) {
+            console.log(error);
             setError('An error occurred. Please try again later.');
         }
     };

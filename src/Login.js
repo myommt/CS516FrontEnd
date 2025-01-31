@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import config from './config'; // Adjust the import path as necessary
 import './Login.css'; // Import the CSS file
+import config from './config';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -25,15 +25,16 @@ const Login = () => {
         };
 
         try {
-            const response = await axios.post(`${config.apiBaseUrl}/login`, userData);
+            const response = await axios.post(`${config.apiBaseUrl}/dev/auth/login`, userData);
 
-            if (response.data.success) {
+            if (response.data.responseCode === '200') {
                 setSuccess('Login successful!');
                 // Perform actions after successful login, like redirecting the user
             } else {
                 setError('Login failed. Please try again.');
             }
         } catch (error) {
+            console.log(error);
             setError('An error occurred. Please try again later.');
         }
     };
@@ -63,4 +64,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Login;;

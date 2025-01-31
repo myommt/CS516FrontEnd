@@ -36,5 +36,6 @@
   },
   "devDependencies": {
     "web-vitals": "^4.2.4"
-  }
+  },
+  "proxy": "https://t86zva79uh.execute-api.us-east-1.amazonaws.com"
 }
