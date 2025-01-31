@@ -35,6 +35,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "web-vitals": "^4.2.4"
   },
   "proxy": "https://t86zva79uh.execute-api.us-east-1.amazonaws.com/dev"

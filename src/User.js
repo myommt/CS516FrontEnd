@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './User.css'; // Import the CSS file
@@ -12,34 +12,35 @@ const User = () => {
     const [imageError, setImageError] = useState(false);
     const navigate = useNavigate();
 
+    const fetchData = useCallback(async () => {
+        const token = localStorage.getItem('authtoken');
+        if (!token) {
+            setError('No token found. Please log in.');
+            navigate('/login');
+            return;
+        }
+
+        try {
+            const response = await axios.get(`${config.apiBaseUrl}/auth/user`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log('User data:', response.data.data);
+            setUserData(response.data.data);
+            if (response.data.data.profileImage) {
+                setProfileImage(response.data.data.profileImage); // Set the profile image if available
+                console.log('Profile image URL:', response.data.data.profileImage);
+            }
+        } catch (error) {
+            console.log('Error fetching user data:', error);
+            setError('Failed to fetch user data.');
+        }
+    }, [navigate]);
+
     useEffect(() => {
-        const fetchData = async () => {
-            const token = localStorage.getItem('authtoken');
-            if (!token) {
-                setError('No token found. Please log in.');
-                return;
-            }
-
-            try {
-                const response = await axios.get(`${config.apiBaseUrl}/auth/user`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                console.log('User data:', response.data.data);
-                setUserData(response.data.data);
-                if (response.data.data.profileImage) {
-                    setProfileImage(response.data.data.profileImage); // Set the profile image if available
-                    console.log('Profile image URL:', response.data.data.profileImage);
-                }
-            } catch (error) {
-                console.log('Error fetching user data:', error);
-                setError('Failed to fetch user data.');
-            }
-        };
-
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const handleImageUpload = async (e) => {
         setUploadError('');
@@ -59,9 +60,9 @@ const User = () => {
                         'Content-Type': 'application/json',
                     },
                 });
-                if (response.data.data.responseCode === '200') {
-                    setProfileImage(response.data.data.profileImage); // Update with the URL of the uploaded image
-                    console.log('Uploaded image URL:', response.data.data.profileImage);
+                if (response.data.responseCode === 200) {
+                    // Fetch the user data again to get the latest profile image
+                    await fetchData();
                 } else {
                     setUploadError('Failed to upload image. Please try again.');
                 }

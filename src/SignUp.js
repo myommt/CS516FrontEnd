@@ -36,8 +36,8 @@ const SignUp = ({ setIsAuthenticated }) => {
 
         try {
             const response = await axios.post(`${config.apiBaseUrl}/auth/signup`, userData);
-
-            if (response.data.responseCode === '200') {
+            console.log(response.data.responseCode);
+            if (response.data.responseCode === 200) {
                 setSuccess('Registration successful!');
                 setEmail('');
                 setPassword('');

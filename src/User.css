@@ -33,8 +33,10 @@
 }
 
 .profile-image {
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    /* Increased width */
+    height: 150px;
+    /* Increased height */
     border-radius: 50%;
     margin-top: 20px;
     object-fit: cover;
@@ -48,6 +50,11 @@
     justify-content: center;
     font-size: 1.5rem;
     color: #999;
+    width: 150px;
+    /* Increased width */
+    height: 150px;
+    /* Increased height */
+    border-radius: 50%;
 }
 
 .logout-button {

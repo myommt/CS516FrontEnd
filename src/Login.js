@@ -15,7 +15,7 @@ const Login = ({ setIsAuthenticated }) => {
         // Clear token and set isAuthenticated to false when the component loads
         localStorage.removeItem('authtoken');
         setIsAuthenticated(false);
-    }, [setIsAuthenticated]); // Include setIsAuthenticated in the dependency array
+    }, [setIsAuthenticated]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -34,9 +34,8 @@ const Login = ({ setIsAuthenticated }) => {
 
         try {
             const response = await axios.post(`${config.apiBaseUrl}/auth/login`, userData);
-            console.log(response);
-            if (response.data.responseCode === '200') {
-                console.log(response);
+
+            if (response.data.responseCode === 200) {
                 setSuccess('Login successful!');
                 // Store the token in localStorage
                 localStorage.setItem('authtoken', response.data.token);
