@@ -10,6 +10,9 @@ const User = () => {
     const [profileImage, setProfileImage] = useState(null);
     const [uploadError, setUploadError] = useState('');
     const [imageError, setImageError] = useState(false);
+    const [imagePreview, setImagePreview] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [fileToUpload, setFileToUpload] = useState(null);
     const navigate = useNavigate();
 
     const fetchData = useCallback(async () => {
@@ -42,9 +45,21 @@ const User = () => {
         fetchData();
     }, [fetchData]);
 
-    const handleImageUpload = async (e) => {
-        setUploadError('');
+    const handleFileChange = (e) => {
         const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+                setShowModal(true);
+            };
+            reader.readAsDataURL(file);
+            setFileToUpload(file);
+        }
+    };
+
+    const handleImageUpload = async () => {
+        setUploadError('');
         const reader = new FileReader();
         reader.onloadend = async () => {
             const base64String = reader.result.replace('data:', '').replace(/^.+,/, '');
@@ -69,9 +84,13 @@ const User = () => {
             } catch (error) {
                 console.log('Error uploading image:', error);
                 setUploadError('An error occurred. Please try again later.');
+            } finally {
+                setShowModal(false); // Close the modal
+                setImagePreview(null); // Clear the image preview
+                setFileToUpload(null); // Clear the file to upload
             }
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(fileToUpload);
     };
 
     const handleLogout = () => {
@@ -81,6 +100,12 @@ const User = () => {
 
     const handleImageError = () => {
         setImageError(true);
+    };
+
+    const handleCancelUpload = () => {
+        setShowModal(false);
+        setImagePreview(null);
+        setFileToUpload(null);
     };
 
     if (error) {
@@ -103,15 +128,33 @@ const User = () => {
                     ) : (
                         <div className="profile-image fallback">?</div>
                     )}
-                    <input type="file" onChange={handleImageUpload} />
+                    <input type="file" onChange={handleFileChange} />
                     {uploadError && <p className="error-message">{uploadError}</p>}
                     <button onClick={handleLogout} className="logout-button">Log Out</button>
                 </div>
             ) : (
                 <p>Loading...</p>
             )}
+
+            {showModal && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h3>Image Preview:</h3>
+                        <img
+                            src={imagePreview}
+                            alt="Preview"
+                            className="profile-image"
+                        />
+                        <div className="modal-buttons">
+                            <button onClick={handleImageUpload}>Confirm</button>
+                            <button onClick={handleCancelUpload}>Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
 export default User;
+
