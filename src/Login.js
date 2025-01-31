@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Login.css'; // Import the CSS file
 import config from './config';
 
-const Login = () => {
+const Login = ({ setIsAuthenticated }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // Clear token and set isAuthenticated to false when the component loads
+        localStorage.removeItem('authtoken');
+        setIsAuthenticated(false);
+    }, [setIsAuthenticated]); // Include setIsAuthenticated in the dependency array
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -25,11 +33,15 @@ const Login = () => {
         };
 
         try {
-            const response = await axios.post(`${config.apiBaseUrl}/dev/auth/login`, userData);
-
+            const response = await axios.post(`${config.apiBaseUrl}/auth/login`, userData);
+            console.log(response);
             if (response.data.responseCode === '200') {
+                console.log(response);
                 setSuccess('Login successful!');
-                // Perform actions after successful login, like redirecting the user
+                // Store the token in localStorage
+                localStorage.setItem('authtoken', response.data.token);
+                setIsAuthenticated(true);
+                navigate('/user');
             } else {
                 setError('Login failed. Please try again.');
             }
@@ -64,4 +76,4 @@ const Login = () => {
     );
 };
 
-export default Login;;
+export default Login;

@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './SignUp.css'; // Import the CSS file
 import config from './config';
 
-const SignUp = () => {
+const SignUp = ({ setIsAuthenticated }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // Clear token and set isAuthenticated to false when the component loads
+        localStorage.removeItem('authtoken');
+        setIsAuthenticated(false);
+    }, [setIsAuthenticated]); // Include setIsAuthenticated in the dependency array
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -27,13 +35,14 @@ const SignUp = () => {
         };
 
         try {
-            const response = await axios.post(`${config.apiBaseUrl}/dev/auth/signup`, userData);
+            const response = await axios.post(`${config.apiBaseUrl}/auth/signup`, userData);
 
             if (response.data.responseCode === '200') {
                 setSuccess('Registration successful!');
                 setEmail('');
                 setPassword('');
                 setName('');
+                navigate('/login');
             } else {
                 setError('Registration failed. Please try again.');
             }
