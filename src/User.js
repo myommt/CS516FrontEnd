@@ -78,16 +78,16 @@ const User = () => {
                 if (response.data.responseCode === 200) {
                     // Fetch the user data again to get the latest profile image
                     await fetchData();
+                    // Reset the state to ensure modal doesn't pop up again
+                    setShowModal(false);
+                    setImagePreview(null);
+                    setFileToUpload(null);
                 } else {
                     setUploadError('Failed to upload image. Please try again.');
                 }
             } catch (error) {
                 console.log('Error uploading image:', error);
                 setUploadError('An error occurred. Please try again later.');
-            } finally {
-                setShowModal(false); // Close the modal
-                setImagePreview(null); // Clear the image preview
-                setFileToUpload(null); // Clear the file to upload
             }
         };
         reader.readAsDataURL(fileToUpload);
@@ -106,6 +106,7 @@ const User = () => {
         setShowModal(false);
         setImagePreview(null);
         setFileToUpload(null);
+        document.querySelector("input[type='file']").value = ''; // Reset file input
     };
 
     if (error) {
@@ -157,4 +158,3 @@ const User = () => {
 };
 
 export default User;
-
